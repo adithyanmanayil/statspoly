@@ -115,7 +115,8 @@ $user=$_SESSION['user_admn'];
 			
 			for($i=1; $i<=$max_value; $i++){
 				echo"<div class='card-03' style='padding: 2em;'>";
-				echo"<form method=POST>";
+				echo"<h3>SEMESTER 0$i</h3>";
+				echo"<form method=POST style='margin: 2em auto;'>";
 				echo"<table style='width: 100%; margin: 0 auto; border=0;'>";
 				echo"<tr><th>CODE</th><th>NAME</th><th>CREDIT</th><th>GRADE</th></tr>";
 				$sql="SELECT * FROM subjects where sem=$i";
@@ -127,28 +128,42 @@ $user=$_SESSION['user_admn'];
 						$grade = "g" .$i.$j;
 						echo "<tr>";
 						//echo "<td style='padding: 0.5em; width: 10%;' name='$ssem'>".$row["code"]."</td>";
-						echo "<td style='padding: 0.5em; width: 10%;'><input type='text' name='$ssem' value=".$row["code"]."></td>";
-						echo "<td style='text-align: left; width: 60%;'>".$row["name"]."</td>";
-						echo "<td style='width: 10%;'>".$row["credit"]."</td>";
-						echo "<td style='width: 10%;'>";
-						echo "<select class='dd-inputs' id='$grade'>";
-						echo "<option value='1'>S</option>";
-						echo "<option value='2'>A</option>";
-						echo "<option value='3'>B</option>";
-						echo "<option value='4'>C</option>";
-						echo "<option value='5'>D</option>";
-						echo "<option value='6'>E</option>";
-						echo "<option value='7'>F</option>";
-						echo "</select>";
+						echo "<td style='padding: 1em; width: 10%;'>
+						<input type='text' name='$ssem' value=".$row["code"]." readonly style='font-weight: 700; text-align: center; width: 100%;'>
+						</td>";
+						echo "<td style='text-align: left; width: 50%;'>".$row["name"]."</td>";
+						echo "<td style='width: 5%;'>".$row["credit"]."</td>";
+						echo "<td style='width: 35%;'>";
+						//echo "<input type='text' class='text-inputs' name='$grade' style='text-align: center;'>";
+						echo "<input type='radio' name='$grade' id='1$grade' value='S' style='margin: 0 0.5em;' required>";
+						echo "<input type='radio' name='$grade' id='2$grade' value='A' style='margin: 0 0.5em;' required>";
+						echo "<input type='radio' name='$grade' id='3$grade' value='B' style='margin: 0 0.5em;' required>";
+						echo "<input type='radio' name='$grade' id='4$grade' value='C' style='margin: 0 0.5em;' required>";
+						echo "<input type='radio' name='$grade' id='5$grade' value='D' style='margin: 0 0.5em;' required>";
+						echo "<input type='radio' name='$grade' id='6$grade' value='E' style='margin: 0 0.5em;' required>";
+						echo "<input type='radio' name='$grade' id='7$grade' value='F' style='margin: 0 0.5em;' required>";
+						echo "<input type='hidden' name='$grade$i'>"
+						?>
+						<!--<select class='dd-inputs' id=$grade>
+						<option value='1'>S</option>
+						<option value='2'>A</option>
+						<option value='3'>B</option>
+						<option value='4'>C</option>
+						<option value='5'>D</option>
+						<option value='6'>E</option>
+						<option value='7'>F</option>
+						</select>-->
+						<?php
 						echo "</td>";
 						echo "</tr>";
 						$j++;
 					}
 				}
-				echo"</table>";
-				echo"<input type='submit' class='btn-ppt' name='sem$i' value='Save'>";
-				echo"</form>";
-				if(isset($_POST["sem$i"])){
+				echo "</table>";
+				echo "<input type='submit' class='btn-ppt' name='savesem$i' value='Save'>";
+				echo "<input type='submit' class='btn-ppt' name='updatesem$i' value='Update'>";
+				echo "</form>";
+				if(isset($_POST["savesem$i"])){
 					$sql="SELECT * FROM subjects where sem=$i";
 					$result=$conn->query($sql);
 					if($result->num_rows>0){
@@ -157,6 +172,20 @@ $user=$_SESSION['user_admn'];
 							$scode=$_POST["co$i$y"];
 							$sgrade=$_POST["g$i$y"];
 							$sql="INSERT INTO results(admn, code, grade) VALUES('$user', '$scode', '$sgrade')";
+							$conn->query($sql);
+							$y++;
+						}
+					}
+				}
+				if(isset($_POST["updatesem$i"])){
+					$sql="SELECT * FROM subjects where sem=$i";
+					$result=$conn->query($sql);
+					if($result->num_rows>0){
+						$y=1;
+						while($row=$result->fetch_assoc()){
+							$scode=$_POST["co$i$y"];
+							$sgrade=$_POST["g$i$y"];
+							$sql="UPDATE results SET grade='$sgrade' WHERE admn='$user' and code='$scode'";
 							$conn->query($sql);
 							$y++;
 						}

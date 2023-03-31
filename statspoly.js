@@ -11,11 +11,3 @@ function genlogin(){
 	
 	document.getElementById("pwd").value=pwd;
 }
-
-function alertInsert(){
-	alert("New Subject Inserted");
-}
-
-function get_admn(){
-	alert("working");
-}
