@@ -55,6 +55,7 @@ if ($conn->connect_error){
                                             header("Location:admin.php");
                                         }
                                         exit;
+//Echo 
                                     }
                                 }
                             }
