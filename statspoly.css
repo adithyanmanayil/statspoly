@@ -111,11 +111,10 @@ body{
 		-13px -13px 20px #fff;
 }
 .card-04{
-	position: relative;
-	flex: 1;
-	text-align: center;
-	max-width: 700px;
+	width:80%;
+	max-width: 1400px;
 	height: auto;
+	text-align: center;
 	margin: 0.5em auto;
 	padding: 1em;
 	border-radius: 10px;
@@ -125,7 +124,7 @@ body{
 }
 
 .yscroll{
-	max-height: 50em;
+	max-height: 560px;
 	overflow-y: scroll;
 }
 
@@ -244,12 +243,15 @@ label{
 	}
 	.card-03{
 		flex: 100%;
-		width: 80%;
+		width: 100%;
 	}
     .text-inputs{
 		width: 80%;
 	}
 	.num-inputs{
     	width:80%;
+    }
+    .card-04{
+        width: 100%;
     }
 }
