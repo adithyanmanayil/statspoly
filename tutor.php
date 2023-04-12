@@ -1,4 +1,5 @@
 <?php
+ob_start();
 $hostname = "localhost";
 $username = "root";
 $password = "";
@@ -80,7 +81,7 @@ $usertype=$_SESSION['user_type'];
 							<input type="text" class="text-inputs" name="name" id="tname" placeholder="Student Name">
 							<input type="number" class="num-inputs" name="mob" id="mob" placeholder="Mobile Number">
 							<input type="email" class="text-inputs" name="mail" id="tmail" placeholder="E-Mail"><br>
-							<div style="margin: 0 auto; letter-spacing: 1em;">
+							<!--<div style="margin: 0 auto; letter-spacing: 1em;">
 								<h4 style="letter-spacing: 0.2em; font-weight: 600; line-height: 2em;">SEMESTER</h4>
 								<label style="letter-spacing: 1.5em; padding-left: 1.5em;">123456</label><br>
 								<input type="radio" name="sem" value="1">
@@ -89,7 +90,7 @@ $usertype=$_SESSION['user_type'];
 								<input type="radio" name="sem" value="4">
 								<input type="radio" name="sem" value="5">
 								<input type="radio" name="sem" value="6">
-							</div>
+							</div>-->
 							<input type="button" class="btn-ppt" value="Generate" onClick="genlogin();"><br>
 							<input type="text" class="text-inputs" name="username" id="username" placeholder="Username">
 							<input type="text" class="text-inputs" name="pwd" id="pwd" placeholder="Password"><br>
@@ -102,8 +103,8 @@ $usertype=$_SESSION['user_type'];
 							$mob=$_POST["mob"];
                             $mail=$_POST["mail"];
                             $pwd=$_POST["pwd"];
-							$ssem=$_POST["sem"];
-							$query="SELECT * FROM registration WHERE admn='$admn' AND sem='$ssem'";
+							//$ssem=$_POST["sem"];
+							$query="SELECT * FROM registration WHERE admn='$admn' AND sem='$usersem'";
 							$result=$conn->query($query);
 							if(!$result->num_rows>0){
 								$sql="insert into registration values('$admn', '$name', '$mob', '$mail', '$pwd', 0, '$ssem', '$user')";
@@ -214,78 +215,92 @@ $usertype=$_SESSION['user_type'];
             </div>
 			<div class="row" id="verification">
 				<div class="card-03">
-					<h3>VERIFICATION</h3><br>
-					<!--<form method="POST">
-						<input list="your_datalist" name="vvalue" class='text-inputs data-inputs'  placeholder="Student Name">
-					//	<?php
-					//	$query = "SELECT * FROM registration WHERE type='0'";
-					//	$result = mysqli_query($conn, $query);
-					//	?>
+					<h3>VERIFICATION</h3>
+					<form method="POST">
+					<input list="your_datalist" name="vvalue" class='text-inputs data-inputs'  placeholder="Student Name">
+						<?php
+						$query = "SELECT * FROM registration WHERE type='0'";
+						$result = mysqli_query($conn, $query);
+						?>
 						<datalist id="your_datalist">
-					//	<?php
-					//	while ($row = mysqli_fetch_array($result)) {
-					//		echo '<option value="' . $row['name'].'">';
-					//	}
-					//	?>
+						<?php
+						while ($row = mysqli_fetch_array($result)) {
+							echo '<option value="' . $row['name'].'">';
+						}
+						?>
 						</datalist>
 						<input type="submit" class="btn-ppt" name="vstudent" value="Search">
-					</form>-->
-					<div class="yscroll" style="padding: 2em;">
+					</form>
+					<div class="yscroll">
 					<?php
-					if(!isset($_POST["vstudent"])){
-						$sql = "SELECT DISTINCT registration.admn
-								FROM registration
-								INNER JOIN results ON registration.admn = results.admn
-								INNER JOIN subjects ON results.code = subjects.code
-								WHERE registration.sem = $usersem AND subjects.sem= $usersem AND registration.type=0
-								ORDER BY registration.admn";
-						$result = $conn->query($sql);
-						if ($result->num_rows > 0) {
+					$sql = "SELECT DISTINCT registration.admn
+							FROM registration
+							INNER JOIN results ON registration.admn = results.admn
+							INNER JOIN subjects ON results.code = subjects.code
+							WHERE registration.sem = $usersem AND subjects.sem= $usersem AND registration.type=0
+							ORDER BY registration.admn";
+					$result = $conn->query($sql);
+					if ($result->num_rows > 0) {
+						$n=1;
+						while ($row = $result->fetch_assoc()){
+							$checkif = 'checkif'.$z;				
+							$admn = $row['admn'];
+							$sql2 = "SELECT registration.name AS reg_name, results.grade, subjects.name
+									FROM registration
+									INNER JOIN results ON registration.admn = results.admn
+									INNER JOIN subjects ON results.code = subjects.code
+									WHERE registration.admn = $admn AND registration.sem = $usersem AND subjects.sem= $usersem
+									ORDER BY registration.admn";
+							$result2 = $conn->query($sql2);
+							$row2=$result2->fetch_assoc();
+							echo "<center><div class='card-02' style='width: 100%; margin: 1em auto;'>";
+							echo "<h4 style='text-align: left; margin: 0 1em;'>".$row2['reg_name']."</h4>";
+							echo "<form method='POST'>";
+							echo "<table style='margin: 1em auto; width: 100%;'>";
+							echo "<tr'><th style='padding: 1em;'>Subject Name</th><th style='padding: 1em;'>Grade</th><th style='padding: 1em;'>I Mark</th></tr>";
+							$sql3 = "SELECT registration.name AS reg_name, results.grade, subjects.name
+									FROM registration
+									INNER JOIN results ON registration.admn = results.admn
+									INNER JOIN subjects ON results.code = subjects.code
+									WHERE registration.admn = $admn AND registration.sem = $usersem AND subjects.sem= $usersem
+									ORDER BY registration.admn";
+							$result3 = $conn->query($sql3);
 							$z=1;
-							while ($row = $result->fetch_assoc()){
-								$checkif = 'checkif'.$z;				
-								$admn = $row['admn'];
-								$sql2 = "SELECT registration.name AS reg_name, results.grade, subjects.name
-										FROM registration
-										INNER JOIN results ON registration.admn = results.admn
-										INNER JOIN subjects ON results.code = subjects.code
-										WHERE registration.admn = $admn AND registration.sem = $usersem AND subjects.sem= $usersem
-										ORDER BY registration.admn";
-								$result2 = $conn->query($sql2);
-								$row2=$result2->fetch_assoc();
-								echo "<center><div class='card-02' style='width: 100%;'>";
-								echo "<h4 style='text-align: left; margin: 0 1em;'>".$row2['reg_name']."</h4>";
-								echo "<form method='POST'>";
-								echo "<table style='margin: 1em auto; width: 100%;'>";
-								echo "<tr'><th style='padding: 1em;'>Subject Name</th><th>Grade</th></tr>";
-								$sql3 = "SELECT registration.name AS reg_name, results.grade, subjects.name
-										FROM registration
-										INNER JOIN results ON registration.admn = results.admn
-										INNER JOIN subjects ON results.code = subjects.code
-										WHERE registration.admn = $admn AND registration.sem = $usersem AND subjects.sem= $usersem
-										ORDER BY registration.admn";
-								$result3 = $conn->query($sql3);
-								while ($row3 = $result3->fetch_assoc()) {
-									echo "<tr style='background-color: #555;'>";
-									echo "<td style='text-align: left;'>" . $row3['name'] . "</td>";
-									echo "<td style='text-align: center;'>" . $row3['grade'] . "</td>";
-									echo "</tr>";
-								}
-								echo "</table>";
-								echo "<label style='font-weight: 500';>VERIFIED</label><input type='checkbox' name='$checkif'><br>";
-								echo "<input type='submit' class='btn-ppt' name='v$checkif' value='Confirm'>";
-								echo "</form>";
-								if(isset($_POST["v$checkif"])){
-									$checkboxValue = isset($_POST["$checkif"]) ? 1 : 0;
-									$sql5 = "UPDATE results SET verified='$checkboxValue' WHERE admn=".$row['admn'];
-									$conn->query($sql5);
-								}
-								echo "</div></center>";
+							while ($row3 = $result3->fetch_assoc()) {
+								echo "<tr>";
+								echo "<td style='width:800%; padding: 0.2em; text-align: left;'>" . $row3['name'] . "</td>";
+								echo "<td style='width:10%; padding: 0.2em; text-align: center;'>" . $row3['grade'] . "</td>";
+								echo "<td style='width:10%; padding: 0.2em;'><input type='number' class='num-inputs' style='width: 100%; text-align: center; margin: 0.5em 0;' name='i$n$z'></td>";
+								echo "</tr>";
 								$z++;
 							}
-						} else {
-						echo "No results found.";
+							echo "</table>";
+							echo "<label style='font-weight: 500';>VERIFIED</label><input type='checkbox' name='$checkif'><br>";
+							echo "<input type='submit' class='btn-ppt' name='v$checkif' value='Confirm'>";
+							echo "</form>";
+							if(isset($_POST["v$checkif"])){
+								$checkboxValue = isset($_POST["$checkif"]) ? 1 : 0;
+								$sql5 = "UPDATE results SET verified='$checkboxValue' WHERE admn=".$row['admn'];
+								$conn->query($sql5);
+								$i=1;
+								echo $i; // check if this value is being printed
+								$sql6 = "SELECT count(*) FROM results WHERE admn=".$row['admn']."AND sem='$usersem'";
+								$result6 = $conn->query($sql6);
+								if($result6->num_rows>0){
+									while($row6=$result6->fetch_assoc()){
+										$imark="i".$n.$i;
+										$sql7="UPDATE results SET imark='$imark' WHERE admn=".$row['admn'];
+										$conn->query($sql7);
+										$i++;
+									}
+								}
+								header("Location: tutor.php#verification");
+							}
+							echo "</div></center>";
+							$n++;
 						}
+					} else {
+					echo "No results found.";
 					}
 					?>
 					</div>
