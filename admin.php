@@ -286,14 +286,19 @@ if (!isset($_SESSION['user_admn'])) {
 						while ($row2 = $r2->fetch_assoc()) {
 							$admn = $row2['admn'];
 							if (!in_array($admn, $printed_admns)) {
-								echo "</tr><tr><td>".$admn."</td>";
-								echo "<td>".$row2['name']."</td>";
+								echo "</tr><tr><td rowspan='2'>".$admn."</td>";
+								echo "<td rowspan='2'>".$row2['name']."</td>";
 								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn";
 								$r3=$conn->query($s3);
 								while ($row3 = $r3->fetch_assoc()) {
 									echo "<td>".$row3['grade']."</td>";
 								}
-								echo "<br>";
+								echo "</tr><tr>";
+								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn";
+								$r3=$conn->query($s3);
+								while ($row3 = $r3->fetch_assoc()) {
+									echo "<td>".$row3['imark']."</td>";
+								}
 								$printed_admns[] = $admn;
 							}
 						}
