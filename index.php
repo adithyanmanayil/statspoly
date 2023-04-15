@@ -22,7 +22,7 @@ if ($conn->connect_error){
     <body>
         <div class="container">
 			<div class="row">
-				<div class="card-02 login" style="margin: 5em auto;">
+				<div class="card-02 login" style="margin: 5em auto; height: auto;">
                     <h3 style='font-size: 20px;'>STATSPOLY</h3>
                     <h3 style='font-size: 10px;'>SEEK EASY</h3><br>
                     <center>
