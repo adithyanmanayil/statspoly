@@ -237,15 +237,15 @@ $usertype=$_SESSION['user_type'];
 							FROM registration
 							INNER JOIN results ON registration.admn = results.admn
 							INNER JOIN subjects ON results.code = subjects.code
-							WHERE registration.sem = $usersem AND subjects.sem= $usersem AND registration.type=0
+							WHERE registration.sem = $usersem AND subjects.sem= $usersem AND registration.type=0 AND registration.tid=$user
 							ORDER BY registration.admn";
 					$result = $conn->query($sql);
 					if ($result->num_rows > 0) {
 						$n=1;
 						while ($row = $result->fetch_assoc()){
-							$checkif = 'checkif'.$z;				
+							$checkif = 'checkif'.$n;				
 							$admn = $row['admn'];
-							$sql2 = "SELECT registration.name AS reg_name, results.grade, subjects.name
+							$sql2 = "SELECT registration.name AS reg_name, results.grade, subjects.name, results.verified
 									FROM registration
 									INNER JOIN results ON registration.admn = results.admn
 									INNER JOIN subjects ON results.code = subjects.code
@@ -258,7 +258,7 @@ $usertype=$_SESSION['user_type'];
 							echo "<form method='POST'>";
 							echo "<table style='margin: 1em auto; width: 100%;'>";
 							echo "<tr'><th style='padding: 1em;'>Subject Name</th><th style='padding: 1em;'>Grade</th><th style='padding: 1em;'>I Mark</th></tr>";
-							$sql3 = "SELECT registration.name AS reg_name, results.grade, subjects.name
+							$sql3 = "SELECT registration.name AS reg_name, results.grade, subjects.name, results.imark, results.code, results.verified
 									FROM registration
 									INNER JOIN results ON registration.admn = results.admn
 									INNER JOIN subjects ON results.code = subjects.code
@@ -270,12 +270,17 @@ $usertype=$_SESSION['user_type'];
 								echo "<tr>";
 								echo "<td style='width:800%; padding: 0.2em; text-align: left;'>" . $row3['name'] . "</td>";
 								echo "<td style='width:10%; padding: 0.2em; text-align: center;'>" . $row3['grade'] . "</td>";
-								echo "<td style='width:10%; padding: 0.2em;'><input type='number' class='num-inputs' style='width: 100%; text-align: center; margin: 0.5em 0;' name='i$n$z'></td>";
+								echo "<td style='width:10%; padding: 0.2em;'><input type='number' class='num-inputs' style='width: 100%; text-align: center; margin: 0.5em 0;' name='i$n$z' value=".$row3["imark"]."></td>";
+								
 								echo "</tr>";
 								$z++;
 							}
 							echo "</table>";
-							echo "<label style='font-weight: 500';>VERIFIED</label><input type='checkbox' name='$checkif'><br>";
+							echo "<label style='font-weight: 500';>VERIFIED</label><input type='checkbox' name='$checkif'";
+							if($row2['verified']='1'){
+								echo "checked";
+							}
+							echo"><br>";
 							echo "<input type='submit' class='btn-ppt' name='v$checkif' value='Confirm'>";
 							echo "</form>";
 							if(isset($_POST["v$checkif"])){
@@ -283,16 +288,11 @@ $usertype=$_SESSION['user_type'];
 								$sql5 = "UPDATE results SET verified='$checkboxValue' WHERE admn=".$row['admn'];
 								$conn->query($sql5);
 								$i=1;
-								echo $i; // check if this value is being printed
-								$sql6 = "SELECT count(*) FROM results WHERE admn=".$row['admn']."AND sem='$usersem'";
-								$result6 = $conn->query($sql6);
-								if($result6->num_rows>0){
-									while($row6=$result6->fetch_assoc()){
-										$imark="i".$n.$i;
-										$sql7="UPDATE results SET imark='$imark' WHERE admn=".$row['admn'];
-										$conn->query($sql7);
-										$i++;
-									}
+								while ($row3 = $result3->fetch_assoc()){
+									$imark=$_POST["i$n$i"];
+									$sql4="UPDATE results SET imark=4 WHERE admn=".$row['admn']."AND code=".$row3['code'];
+									$conn->query($sql4);
+									$i++;
 								}
 								header("Location: tutor.php#verification");
 							}
