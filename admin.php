@@ -14,15 +14,27 @@ if (!isset($_SESSION['user_admn'])) {
     exit;
 }
 ?>
-
+<?php
+if($_SESSION['user_type']==2){
+?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale-1.0">
+		<meta name="viewport" content="width-device-width, initial-scale-1.0">
 		<title>Admin's Portal</title>
 		<link rel="stylesheet" href="statspoly.css">
 		<script src="statspoly.js"></script>
+		<style>
+			@media print{
+				body *{
+					display: none;
+				}
+				#semout, #semout *{
+					visibility: visible;
+				}
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -34,6 +46,40 @@ if (!isset($_SESSION['user_admn'])) {
 		</div>
 		
 		<div class="container">
+		<div class="row" id="home">
+				<div class="card-03">
+					<h3>HOME</h3>
+					<div class="profile" style='overflow-x: scroll;'>
+						<?php
+						$sql="SELECT * FROM registration WHERE admn=".$_SESSION['user_admn'];
+						$result = $conn->query($sql);
+						$row = $result->fetch_assoc();
+						
+						echo "<table>";
+						if ($result->num_rows>0){
+							echo "<tr>";
+							echo "<th>Name</th>";
+							echo "<td>".$row['name']."</td>";
+							echo "</tr>";
+							echo "<tr>";
+							echo "<th>Tutor ID</th>";
+							echo "<td>".$row['admn']."</td>";
+							echo "</tr>";
+							echo "<tr>";
+							echo "<th>Mail ID</th>";
+							echo "<td>".$row['mail']."</td>";
+							echo "</tr>";
+							echo "<tr>";
+							echo "<th id='grades'>Mobile</th>";
+							echo "<td>".$row['mobile']."</td>";
+							echo "</tr>";
+
+						}
+						echo "</table>";
+						?>
+					</div>
+				</div>
+			</div>
 			<div class="row">
 				<div class="card-01">
 					<h3>ASSIGN TUTOR</h3><br>
@@ -265,16 +311,17 @@ if (!isset($_SESSION['user_admn'])) {
 							WHERE registration.sem = $ressem AND subjects.sem= $ressem AND registration.type=0
 							ORDER BY registration.admn";
 					$result = $conn->query($sql);
-					echo "<center><div class='card-03' style='width: 100%; margin: 1em auto;'>";
+					echo "<center><div id='semout' class='card-03' style='width: 100%; margin: 1em auto;'>";
 					echo "<form method='POST'>";
-					echo "<table border=1; style='background-color: #555; width: 90%; margin: 0 auto;'>";
+					echo "<table border=1; class='xscroll' style='background-color: #333; width: 90%; margin: 0 auto;'>";
 					$s1="SELECT * FROM subjects WHERE sem=$ressem";
 					$r1=$conn->query($s1);
 					$scount=0;
 					if($r1->num_rows>0){
-						echo "<tr><th style='width: 5%;'>Admn</th><th style='width: 30%;'>Name</th>";
+						echo "<tr><th style='width: 5%; background-color: #444; color: #eff'>Admn</th>
+						<th style='width: 30%; background-color: #444; color: #eff'>Name</th>";
 						while($row1=$r1->fetch_assoc()){
-							echo "<th style='width: 5%;'>".$row1['code']."</th>";
+							echo "<th style='width: 5%; background-color: #444; color: #eff'>".$row1['code']."</th>";
 							$scount++;
 						}
 						$s2 = "SELECT registration.admn, registration.name, results.grade, results.imark, results.sem
@@ -287,14 +334,14 @@ if (!isset($_SESSION['user_admn'])) {
 							$admn = $row2['admn'];
 							if (!in_array($admn, $printed_admns)) {
 								echo "</tr><tr><td rowspan='2'>".$admn."</td>";
-								echo "<td rowspan='2'>".$row2['name']."</td>";
-								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn";
+								echo "<th rowspan='2'>".$row2['name']."</th>";
+								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn AND verified=1";
 								$r3=$conn->query($s3);
 								while ($row3 = $r3->fetch_assoc()) {
-									echo "<td>".$row3['grade']."</td>";
+									echo "<td style='background-color: #999; color: #eee'>".$row3['grade']."</td>";
 								}
 								echo "</tr><tr>";
-								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn";
+								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn AND verified=1";
 								$r3=$conn->query($s3);
 								while ($row3 = $r3->fetch_assoc()) {
 									echo "<td>".$row3['imark']."</td>";
@@ -302,15 +349,29 @@ if (!isset($_SESSION['user_admn'])) {
 								$printed_admns[] = $admn;
 							}
 						}
-
 					}else{
 						echo "No results found!";
 					}
 					echo "</table>";
+					//echo "<input type='submit' class='btn-ppt' name='download' value='Download'>";
 					echo "</form>";
+					echo "</div></center>";
+					if(isset($_POST["download"])){
+					}
 				}
 				?>
+				<button id="print" class="btn-ppt">Print</button>
 			</div>
 		</div>
+		<script>
+			const printBtn=document.getElementById("print");
+			printBtn.addEventListener('click', function(){
+				print();
+			})
+		</script>
 	</body>
 </html>
+<?php
+}header('Location: index.php');
+exit;
+?>
