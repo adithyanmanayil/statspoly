@@ -127,6 +127,10 @@ body{
 	max-height: 560px;
 	overflow-y: scroll;
 }
+.xscroll{
+	max-width: 960px;
+	overflow-x: scroll;
+}
 
 .num-inputs{
 	padding: 5px 15px;
@@ -229,9 +233,7 @@ label{
 		inset -8px -8px 8px #fff;
 }
 
-
-
-@media(max-width:800px){
+@media only screen and (max-width: 600px) {
 	.card-01{
 		flex: 100%;
 		width: 80%;
@@ -244,6 +246,7 @@ label{
 	.card-03{
 		flex: 100%;
 		width: 100%;
+		overflow-x: scroll;
 	}
     .text-inputs{
 		width: 80%;
@@ -254,4 +257,10 @@ label{
     .card-04{
         width: 100%;
     }
-}
+	.xscroll{
+		overflow-x: scroll;
+	}
+	.tables{
+		width: 80%;
+	}
+  }
