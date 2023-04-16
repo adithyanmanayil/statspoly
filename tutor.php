@@ -37,7 +37,7 @@ $usertype=$_SESSION['user_type'];
 			<div><a href="#home">HOME</a></div>
 		</div>
         <div class="container">
-		<div class="row" id="home">
+			<div class="row" id="home">
 				<div class="card-03">
 					<h3>HOME</h3>
 					<div class="profile" style='overflow-x: scroll;'>
@@ -81,7 +81,7 @@ $usertype=$_SESSION['user_type'];
 							<input type="text" class="text-inputs" name="name" id="tname" placeholder="Student Name">
 							<input type="number" class="num-inputs" name="mob" id="mob" placeholder="Mobile Number">
 							<input type="email" class="text-inputs" name="mail" id="tmail" placeholder="E-Mail"><br>
-							<!--<div style="margin: 0 auto; letter-spacing: 1em;">
+							<div style="margin: 0 auto; letter-spacing: 1em;">
 								<h4 style="letter-spacing: 0.2em; font-weight: 600; line-height: 2em;">SEMESTER</h4>
 								<label style="letter-spacing: 1.5em; padding-left: 1.5em;">123456</label><br>
 								<input type="radio" name="sem" value="1">
@@ -90,7 +90,7 @@ $usertype=$_SESSION['user_type'];
 								<input type="radio" name="sem" value="4">
 								<input type="radio" name="sem" value="5">
 								<input type="radio" name="sem" value="6">
-							</div>-->
+							</div>
 							<input type="button" class="btn-ppt" value="Generate" onClick="genlogin();"><br>
 							<input type="text" class="text-inputs" name="username" id="username" placeholder="Username">
 							<input type="text" class="text-inputs" name="pwd" id="pwd" placeholder="Password"><br>
@@ -103,7 +103,7 @@ $usertype=$_SESSION['user_type'];
 							$mob=$_POST["mob"];
                             $mail=$_POST["mail"];
                             $pwd=$_POST["pwd"];
-							//$ssem=$_POST["sem"];
+							$ssem=$_POST["sem"];
 							$query="SELECT * FROM registration WHERE admn='$admn' AND sem='$usersem'";
 							$result=$conn->query($query);
 							if(!$result->num_rows>0){
