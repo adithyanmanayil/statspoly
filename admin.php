@@ -392,8 +392,6 @@ if (!isset($_SESSION['user_admn'])) {
 									$div+=$c;
 									$res+=$s;
 								}
-								echo $div;
-								echo  "<br>";
 								$cgpa=($res/$div)*9.5;
 								$formatted_cgpa = number_format($cgpa, 2);
 								echo "<td rowspan='2'>".$formatted_cgpa."</td>";

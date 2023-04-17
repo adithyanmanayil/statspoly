@@ -22,7 +22,7 @@ $usertype=$_SESSION['user_type'];
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale-1.0">
+		<meta name="viewport" content="width-device-width, initial-scale-1.0">
 		<title>Students's Portal</title>
 		<link rel="stylesheet" href="statspoly.css">
 	</head>
@@ -80,14 +80,33 @@ $usertype=$_SESSION['user_type'];
 						
 						for($i=1; $i<=$max_value; $i++){
 							echo "<div class='card-01' style='float: left; width: 50%'>";
-							$sql2="SELECT results.admn, results.sem, results.code, results.grade, registration.admn,
-								subjects.sem, subjects.code, subjects.credit
-								FROM registration
-								INNER JOIN results ON results.admn=registration.admn
-								INNER JOIN subjects ON results.code=subjects.code
-								WHERE sem=$i";
-							$r2=$conn->query($sql2);
-
+							echo "<h3>SEM".$i." CGPA</h3>";
+							$s4 = "SELECT registration.admn, subjects.credit, results.grade , results.grade * subjects.credit AS result,
+								subjects.credit * 10 AS credits
+								FROM subjects
+								INNER JOIN results ON subjects.code=results.code
+								INNER JOIN registration ON registration.admn=results.admn
+								WHERE registration.admn=$user AND registration.sem=$i";
+								$formatted_cgpa=0;
+								$r4 = $conn->query($s4);
+								if($r4->num_rows>0){
+								$cgpa=0;
+								$res=0;
+								$div=0;
+								while($row4=$r4->fetch_assoc()){
+									$s=0;
+									$c=0;
+									$c=$row4['credits'];
+									$s=$row4['result'];
+									$div+=$c;
+									$res+=$s;
+								}
+								$cgpa=($res/$div)*10;
+								$formatted_cgpa = number_format($cgpa, 2);
+								echo $formatted_cgpa;
+								}else{
+									echo $formatted_cgpa;
+								}
 							echo "</div>";
 						}						
 						?>
