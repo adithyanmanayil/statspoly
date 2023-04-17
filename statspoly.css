@@ -233,6 +233,17 @@ label{
 		inset -8px -8px 8px #fff;
 }
 
+.fluid{
+	height: auto;
+	margin: 0 auto;
+	padding: 1em;
+}
+.fluid1{
+	height: auto;
+	width: 80%;
+	padding: 1em;
+}
+
 @media only screen and (max-width: 600px) {
 	.card-01{
 		flex: 100%;
@@ -262,5 +273,8 @@ label{
 	}
 	.tables{
 		width: 80%;
+	}
+	html{
+		width: 520px;
 	}
   }

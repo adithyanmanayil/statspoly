@@ -11,6 +11,3 @@ function genlogin(){
 	
 	document.getElementById("pwd").value=pwd;
 }
-function exists(){
-	alert("Students Exist");
-}

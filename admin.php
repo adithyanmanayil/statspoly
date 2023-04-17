@@ -14,24 +14,29 @@ if (!isset($_SESSION['user_admn'])) {
     exit;
 }
 ?>
-<?php
-if($_SESSION['user_type']==2){
-?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width-device-width, initial-scale-1.0">
+		<meta name="viewport" content="width=device-width, initial-scale-1.0">
 		<title>Admin's Portal</title>
 		<link rel="stylesheet" href="statspoly.css">
 		<script src="statspoly.js"></script>
+		<script src="table2excel.js"></script>
+		<script>
+			function printContent(el){
+				var restorepage=document.body.innerHTML;
+				var printcontent=document.getElementById(el).innerHTML;
+				document.body.innerHTML= printcontent;
+				window.print();
+				document.body.innerHTML= restorepage;
+			}
+		</script>
 		<style>
 			@media print{
-				body *{
-					display: none;
-				}
-				#semout, #semout *{
-					visibility: visible;
+				table {
+					border=1;
+					background-color: #555;
 				}
 			}
 		</style>
@@ -286,7 +291,7 @@ if($_SESSION['user_type']==2){
 					</center>
 				</div>
 			</div>
-			<div class="card-03">
+			<div class="card-03" id="marklist">
 				<h3>MARKLIST</h3>
 				<form method="POST">
 					<select class="dd-opt" name="resultsem">
@@ -312,6 +317,11 @@ if($_SESSION['user_type']==2){
 							ORDER BY registration.admn";
 					$result = $conn->query($sql);
 					echo "<center><div id='semout' class='card-03' style='width: 100%; margin: 1em auto;'>";
+					$s0="SELECT * FROM registration WHERE type=1 AND sem=$ressem";
+					$r0=$conn->query($s0);
+					$rr0=$r0->fetch_assoc();
+					echo "<h3>SEMESTER 0".$ressem."</h3>";
+					echo "<h4>Tutor<span style='letter-spacing: 1em;'> -</span>".$rr0['name'];
 					echo "<form method='POST'>";
 					echo "<table border=1; class='xscroll' style='background-color: #333; width: 90%; margin: 0 auto;'>";
 					$s1="SELECT * FROM subjects WHERE sem=$ressem";
@@ -321,9 +331,10 @@ if($_SESSION['user_type']==2){
 						echo "<tr><th style='width: 5%; background-color: #444; color: #eff'>Admn</th>
 						<th style='width: 30%; background-color: #444; color: #eff'>Name</th>";
 						while($row1=$r1->fetch_assoc()){
-							echo "<th style='width: 5%; background-color: #444; color: #eff'>".$row1['code']."</th>";
+							echo "<th style='width: 4%; background-color: #444; color: #eff'>".$row1['code']."</th>";
 							$scount++;
 						}
+						echo "<th style='width: 4%;'>CGPA</th>";
 						$s2 = "SELECT registration.admn, registration.name, results.grade, results.imark, results.sem
 							FROM registration
 							INNER JOIN results ON registration.admn=results.admn
@@ -338,8 +349,54 @@ if($_SESSION['user_type']==2){
 								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn AND verified=1";
 								$r3=$conn->query($s3);
 								while ($row3 = $r3->fetch_assoc()) {
-									echo "<td style='background-color: #999; color: #eee'>".$row3['grade']."</td>";
+									$grade='F';
+									if($row3['grade']==10){
+										$grade='S';
+									}
+									else if($row3['grade']==9){
+										$grade='A';
+									}
+									else if($row3['grade']==8){
+										$grade='B';
+									}
+									else if($row3['grade']==7){
+										$grade='C';
+									}
+									else if($row3['grade']==6){
+										$grade='D';
+									}
+									else if($row3['grade']==5){
+										$grade='E';
+									}
+									else if($row3['grade']==0){
+										$grade='F';
+									}
+									echo "<td style='background-color: #999; color: #eee'>".$grade."</td>";
 								}
+								
+								$s4 = "SELECT registration.admn, subjects.credit, results.grade , results.grade * subjects.credit AS result,
+								subjects.credit * 10 AS credits
+								FROM subjects
+								INNER JOIN results ON subjects.code=results.code
+								INNER JOIN registration ON registration.admn=results.admn
+								WHERE registration.admn=$admn";
+								$r4 = $conn->query($s4);
+								$cgpa=0;
+								$res=0;
+								$div=0;
+								while($row4=$r4->fetch_assoc()){
+									$s=0;
+									$c=0;
+									$c=$row4['credits'];
+									$s=$row4['result'];
+									$div+=$c;
+									$res+=$s;
+								}
+								echo $div;
+								echo  "<br>";
+								$cgpa=($res/$div)*9.5;
+								$formatted_cgpa = number_format($cgpa, 2);
+								echo "<td rowspan='2'>".$formatted_cgpa."</td>";
 								echo "</tr><tr>";
 								$s3="SELECT * FROM results WHERE sem=$ressem AND admn=$admn AND verified=1";
 								$r3=$conn->query($s3);
@@ -353,25 +410,14 @@ if($_SESSION['user_type']==2){
 						echo "No results found!";
 					}
 					echo "</table>";
-					//echo "<input type='submit' class='btn-ppt' name='download' value='Download'>";
 					echo "</form>";
 					echo "</div></center>";
-					if(isset($_POST["download"])){
-					}
 				}
 				?>
-				<button id="print" class="btn-ppt">Print</button>
+				<form>
+					<input type="submit" value="Download" class="btn-ppt" onclick="printContent('semout')">
+				</form>
 			</div>
 		</div>
-		<script>
-			const printBtn=document.getElementById("print");
-			printBtn.addEventListener('click', function(){
-				print();
-			})
-		</script>
 	</body>
 </html>
-<?php
-}header('Location: index.php');
-exit;
-?>

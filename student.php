@@ -22,7 +22,7 @@ $usertype=$_SESSION['user_type'];
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width-device-width, initial-scale-1.0">
+		<meta name="viewport" content="width=device-width, initial-scale-1.0">
 		<title>Students's Portal</title>
 		<link rel="stylesheet" href="statspoly.css">
 	</head>
@@ -34,10 +34,11 @@ $usertype=$_SESSION['user_type'];
 			<div><a href="#stats">STATS</a></div>
 			<div><a href="#grades">GRADES</a></div>
 			<div><a href="#profile">HOME</a></div>
+			<div style="clear: both;"></div>
 		</div>
 		<div class="container">
 			<h3 style="font-size: 3em; letter-spacing: 0.5em;">STATSPOLY</h3>
-			<h3 style="line-height: 3em;" id="profile">-SEEK EASY!</h3>
+			<h3 style="line-height: 3em;">-SEEK EASY!</h3>
 			<div class="row" id="profile">
 				<div class="card-03">
 					<h3>HOME</h3>
@@ -70,6 +71,28 @@ $usertype=$_SESSION['user_type'];
 						echo "</table>";
 						?>
 					</div>
+					<div class="row">
+						<?php
+						$max_query = "SELECT MAX(sem) AS max_value FROM subjects";
+						$result = $conn->query($max_query);
+						$row = $result->fetch_assoc();
+						$max_value = $row['max_value'];
+						
+						for($i=1; $i<=$max_value; $i++){
+							echo "<div class='card-01' style='float: left; width: 50%'>";
+							$sql2="SELECT results.admn, results.sem, results.code, results.grade, registration.admn,
+								subjects.sem, subjects.code, subjects.credit
+								FROM registration
+								INNER JOIN results ON results.admn=registration.admn
+								INNER JOIN subjects ON results.code=subjects.code
+								WHERE sem=$i";
+							$r2=$conn->query($sql2);
+
+							echo "</div>";
+						}						
+						?>
+						<div style="clear: both;"></div>
+					</div>
 				</div>
 			</div>
 			
@@ -80,10 +103,10 @@ $usertype=$_SESSION['user_type'];
 			$max_value = $row['max_value'];
 			
 			for($i=1; $i<=$max_value; $i++){
-				echo"<div class='card-03' style='padding: 2em;'>";
+				echo"<div class='card-03 ' style='padding: 2em;'>";
 				echo"<h3>SEMESTER 0$i</h3>";
 				echo"<form method=POST style='margin: 2em auto;'>";
-				echo"<table class='tables' style='width: 100%; margin: 0 auto; border=0;'>";
+				echo"<table style='width: 100%; margin: 0 auto;'>";
 				echo"<tr><th style='padding: 0 0.4em;'>CODE</th><th style='padding: 0 0.4em;'>NAME</th><th style='padding: 0 0.4em;'>CREDIT</th><th style='padding: 0 0.4em;'>Imark</th><th colspan='7'>GRADE</th></tr>";
 				echo"<tr><td></td><td></td><td></td><td></td><td style='letter-spacing: 1em; padding-left: 0.8em;'>SABCDEF</td>";
 				$sql="SELECT * FROM subjects where sem=$i AND 'type'=$usertype";
@@ -100,9 +123,9 @@ $usertype=$_SESSION['user_type'];
 						</td>";
 						echo "<td style='text-align: left; width: 45%;'>".$row["name"]."</td>";
 						echo "<td style='width: 5%;'>".$row["credit"]."</td>";
-						echo "<td style='width: 5%;'>
-						<input type='text' name=$simark class='num-inputs' style='text-align: center; width: 100%; margin: 0;'>
-						</td>";
+						echo "<td style='width: 5%;'>";
+						echo "<input type='text' name=$simark class='num-inputs' style='text-align: center; width: 100%; margin: 0;'>";
+						echo "</td>";
 						echo "<td style='width: 35%;'>";
 						echo "<input type='radio' name='$grade' value='S' style='margin: 0 0.5em;'>";
 						echo "<input type='radio' name='$grade' value='A' style='margin: 0 0.5em;'>";
@@ -127,11 +150,32 @@ $usertype=$_SESSION['user_type'];
 						while($row=$result->fetch_assoc()){
 							$scode=$_POST["co$i$y"];
 							$sgrade=$_POST["g$i$y"];
+							if($sgrade=='S'){
+								$ssgrade=10;
+							}
+							else if($sgrade=='A'){
+								$ssgrade=9;
+							}
+							else if($sgrade=='B'){
+								$ssgrade=8;
+							}
+							else if($sgrade=='C'){
+								$ssgrade=7;
+							}
+							else if($sgrade=='D'){
+								$ssgrade=6;
+							}
+							else if($sgrade=='E'){
+								$ssgrade=5;
+							}
+							else{
+								$ssgrade=0;
+							}
 							$simark=$_POST["i$i$y"];
 							$sql2="SELECT * FROM results WHERE admn='$user' AND code='$scode'";
 							$result2=$conn->query($sql2);
 							if($result2->num_rows>0){
-								$sql21="UPDATE results SET grade='$sgrade' WHERE admn='$user' AND code='$scode'";
+								$sql21="UPDATE results SET grade='$ssgrade' WHERE admn='$user' AND code='$scode'";
 								$conn->query($sql21);
 								$sql22="UPDATE results SET imark='$simark' WHERE admn='$user' AND code='$scode'";
 								$conn->query($sql22);
@@ -139,7 +183,7 @@ $usertype=$_SESSION['user_type'];
 								$conn->query($sql23);
 							}
 							else{
-								$sql22="INSERT INTO results (admn, code, grade, imark, sem) VALUES ('$user', '$scode', '$sgrade', '$simark', '$i')";
+								$sql22="INSERT INTO results (admn, code, grade, imark, sem) VALUES ('$user', '$scode', '$ssgrade', '$simark', '$i')";
 								$conn->query($sql22);
 							}
 							$y++;
