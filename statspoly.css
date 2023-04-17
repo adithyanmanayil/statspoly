@@ -245,6 +245,9 @@ label{
 }
 
 @media only screen and (max-width: 600px) {
+	.container{
+		width: 100%;
+	}
 	.card-01{
 		flex: 100%;
 		width: 80%;

@@ -267,9 +267,17 @@ $usertype=$_SESSION['user_type'];
 							$result3 = $conn->query($sql3);
 							$z=1;
 							while ($row3 = $result3->fetch_assoc()) {
+								$rgrade=$row3['grade'];
+								if($rgrade==10){$rrgrade='S';}
+								if($rgrade==9){$rrgrade='A';}
+								if($rgrade==8){$rrgrade='B';}
+								if($rgrade==7){$rrgrade='C';}
+								if($rgrade==6){$rrgrade='D';}
+								if($rgrade==5){$rrgrade='E';}
+								if($rgrade==0){$rrgrade='F';}
 								echo "<tr>";
 								echo "<td style='width:800%; padding: 0.2em; text-align: left;'>" . $row3['name'] . "</td>";
-								echo "<td style='width:10%; padding: 0.2em; text-align: center;'>" . $row3['grade'] . "</td>";
+								echo "<td style='width:10%; padding: 0.2em; text-align: center;'>" . $rrgrade . "</td>";
 								echo "<td style='width:10%; padding: 0.2em;'><input type='number' class='num-inputs' style='width: 100%; text-align: center; margin: 0.5em 0;' name='i$n$z' value=".$row3["imark"]."></td>";
 								
 								echo "</tr>";
@@ -277,7 +285,7 @@ $usertype=$_SESSION['user_type'];
 							}
 							echo "</table>";
 							echo "<label style='font-weight: 500';>VERIFIED</label><input type='checkbox' name='$checkif'";
-							if($row2['verified']='1'){
+							if($row3['verified']='1'){
 								echo "checked";
 							}
 							echo"><br>";
@@ -285,7 +293,7 @@ $usertype=$_SESSION['user_type'];
 							echo "</form>";
 							if(isset($_POST["v$checkif"])){
 								$checkboxValue = isset($_POST["$checkif"]) ? 1 : 0;
-								$sql5 = "UPDATE results SET verified='$checkboxValue' WHERE admn=".$row['admn'];
+								$sql5 = "UPDATE results SET verified='$checkboxValue' WHERE admn=".$row['admn']."AND registration.sem=".$row['sem'];
 								$conn->query($sql5);
 								$i=1;
 								while ($row3 = $result3->fetch_assoc()){
