@@ -1,4 +1,6 @@
 <?php
+session_start();
+ob_start();
 $hostname = "localhost";
 $username = "root";
 $password = "";
@@ -8,7 +10,6 @@ $conn = new mysqli($hostname, $username, $password, $database);
 if ($conn->connect_error){
 	die("Connection Failed" . $conn->connect_error);
 }
-session_start();
 if (!isset($_SESSION['user_admn'])) {
     header('Location: index.php');
     exit;
@@ -47,6 +48,8 @@ if (!isset($_SESSION['user_admn'])) {
 			<div><a href="#">STATSPOLY</a></div>
 			<div><a href="index.php">LOGOUT</a></div>
 			<div><a href="#stats">STATS</a></div>
+			<div><a href="#">EDIT SUBJECT</a></div>
+			<div><a href="#">EDIT TUTOR</a></div>
 			<div><a href="#profile">HOME</a></div>
 		</div>
 		
@@ -129,7 +132,7 @@ if (!isset($_SESSION['user_admn'])) {
 						?>
 					</center>
 				</div>
-				<div class="card-01">
+				<div class="card-01" id="rem-stud">
 					<h3>REMOVE TUTOR</h3><br>
 					<center>
 					<form method="post">
@@ -222,6 +225,7 @@ if (!isset($_SESSION['user_admn'])) {
 						$result=mysqli_query($conn, $query);
 						$query2 = "DELETE FROM results WHERE admn= '$rvalue'";
 						$result2=mysqli_query($conn, $query2);
+						header("Location:admin.php#rem-stud");	
 					}
 					?>
 					</div>
@@ -379,8 +383,11 @@ if (!isset($_SESSION['user_admn'])) {
 								FROM subjects
 								INNER JOIN results ON subjects.code=results.code
 								INNER JOIN registration ON registration.admn=results.admn
-								WHERE registration.admn=$admn";
+								WHERE registration.admn=$admn AND results.sem=$ressem";
 								$r4 = $conn->query($s4);
+								$formatted_cgpa=0;
+								$r4 = $conn->query($s4);
+								if($r4->num_rows>0){
 								$cgpa=0;
 								$res=0;
 								$div=0;
@@ -392,7 +399,7 @@ if (!isset($_SESSION['user_admn'])) {
 									$div+=$c;
 									$res+=$s;
 								}
-								$cgpa=($res/$div)*9.5;
+								$cgpa=($res/$div)*10;
 								$formatted_cgpa = number_format($cgpa, 2);
 								echo "<td rowspan='2'>".$formatted_cgpa."</td>";
 								echo "</tr><tr>";
@@ -404,6 +411,7 @@ if (!isset($_SESSION['user_admn'])) {
 								$printed_admns[] = $admn;
 							}
 						}
+					}
 					}else{
 						echo "No results found!";
 					}

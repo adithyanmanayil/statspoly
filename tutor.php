@@ -33,11 +33,12 @@ $usertype=$_SESSION['user_type'];
 			<div><a href="index.php">LOGOUT</a></div>
 			<div><a href="#stats">STATS</a></div>
 			<div><a href="#verification">VERIFICATION</a></div>
-			<div><a href="#toggle">TOGGLE</a></div>
+			<div><a href="#toggle">EDIT STUDENTS</a></div>
 			<div><a href="#home">HOME</a></div>
 		</div>
+		<div class="row" id="home"><div style="height: 4em;"></div></div>
         <div class="container">
-			<div class="row" id="home">
+			<div class="row">
 				<div class="card-03">
 					<h3>HOME</h3>
 					<div class="profile" style='overflow-x: scroll;'>
@@ -71,8 +72,8 @@ $usertype=$_SESSION['user_type'];
 					</div>
 				</div>
 			</div>
-
-            <div class="row" id="toggle">
+			<div class="row" id="toggle"><div class="card-03 num-inputs"></div></div>
+            <div class="row">
                 <div class="card-02">
                     <h3>APPEND STUDENT</h3><br>
                     <center>
@@ -285,15 +286,20 @@ $usertype=$_SESSION['user_type'];
 							}
 							echo "</table>";
 							echo "<label style='font-weight: 500';>VERIFIED</label><input type='checkbox' name='$checkif'";
-							if($row3['verified']='1'){
-								echo "checked";
+							$ss = "SELECT * FROM results WHERE admn=$admn AND sem=$usersem";
+							$rr= $conn->query($ss);
+							if($rr->num_rows>0){
+								$ror=$rr->fetch_assoc();
+								if($ror['verified']==1){
+									echo "checked";
+								}
 							}
 							echo"><br>";
 							echo "<input type='submit' class='btn-ppt' name='v$checkif' value='Confirm'>";
 							echo "</form>";
 							if(isset($_POST["v$checkif"])){
 								$checkboxValue = isset($_POST["$checkif"]) ? 1 : 0;
-								$sql5 = "UPDATE results SET verified='$checkboxValue' WHERE admn=".$row['admn']."AND registration.sem=".$row['sem'];
+								$sql5 = "UPDATE results SET verified='$checkboxValue' WHERE admn=".$row['admn']." AND sem=$usersem";
 								$conn->query($sql5);
 								$i=1;
 								while ($row3 = $result3->fetch_assoc()){

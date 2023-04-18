@@ -278,6 +278,9 @@ label{
 		width: 80%;
 	}
 	html{
-		width: 520px;
+		width: 90%;
+	}
+	.login{
+		width: 100%;
 	}
   }

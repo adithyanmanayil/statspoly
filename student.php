@@ -32,15 +32,14 @@ $usertype=$_SESSION['user_type'];
 		<div class="navbar">
 			<div><a href="#">STATSPOLY</a></div>
 			<div><a href="index.php">LOGOUT</a></div>
-			<div><a href="#stats">STATS</a></div>
 			<div><a href="#grades">GRADES</a></div>
+			<div><a href="#stats">STATS</a></div>
 			<div><a href="#profile">HOME</a></div>
 			<div style="clear: both;"></div>
 		</div>
-		<div class="container">
-			<h3 style="font-size: 3em; letter-spacing: 0.5em;">STATSPOLY</h3>
-			<h3 style="line-height: 3em;">-SEEK EASY!</h3>
-			<div class="row" id="profile">
+		<div class="container" id="profile">
+			<div class="row"><div style="height: 4em;"></div></div>
+			<div class="row">
 				<div class="card-03">
 					<h3>HOME</h3>
 					<div class="profile">
@@ -64,7 +63,7 @@ $usertype=$_SESSION['user_type'];
 							echo "<td>".$row['mail']."</td>";
 							echo "</tr>";
 							echo "<tr>";
-							echo "<th id='grades'>Mobile</th>";
+							echo "<th>Mobile</th>";
 							echo "<td>".$row['mobile']."</td>";
 							echo "</tr>";
 
@@ -72,6 +71,8 @@ $usertype=$_SESSION['user_type'];
 						echo "</table>";
 						?>
 					</div>
+					<div class="row" id="stats"><div class="card-03 num-inputs"></div></div><br>
+					<h3>STATS</h3><br>
 					<div class="row">
 						<?php
 						$max_query = "SELECT MAX(sem) AS max_value FROM subjects";
@@ -82,32 +83,44 @@ $usertype=$_SESSION['user_type'];
 						for($i=1; $i<=$max_value; $i++){
 							echo "<div class='card-01' style='float: left; width: 50%'>";
 							echo "<h3>SEM".$i." CGPA</h3>";
-							$s4 = "SELECT registration.admn, subjects.credit, results.grade , results.grade * subjects.credit AS result,
-								subjects.credit * 10 AS credits
-								FROM subjects
-								INNER JOIN results ON subjects.code=results.code
-								INNER JOIN registration ON registration.admn=results.admn
-								WHERE registration.admn=$user AND registration.sem=$i";
-								$formatted_cgpa=0;
-								$r4 = $conn->query($s4);
-								if($r4->num_rows>0){
-								$cgpa=0;
-								$res=0;
-								$div=0;
-								while($row4=$r4->fetch_assoc()){
-									$s=0;
-									$c=0;
-									$c=$row4['credits'];
-									$s=$row4['result'];
-									$div+=$c;
-									$res+=$s;
-								}
-								$cgpa=($res/$div)*10;
-								$formatted_cgpa = number_format($cgpa, 2);
-								echo $formatted_cgpa;
-								}else{
+							$ss="SELECT * FROM results WHERE admn=$user AND sem=$i";
+							$rr=$conn->query($ss);
+							if($rr->num_rows>0){
+								$ror=$rr->fetch_assoc();
+								if($ror['verified']==1){
+									$s4 = "SELECT registration.admn, subjects.credit, results.grade , results.grade * subjects.credit AS result,
+										subjects.credit * 10 AS credits
+										FROM subjects
+										INNER JOIN results ON subjects.code=results.code
+										INNER JOIN registration ON registration.admn=results.admn
+										WHERE registration.admn=$user AND results.sem=$i";
+									$formatted_cgpa=0;
+									$r4 = $conn->query($s4);
+									if($r4->num_rows>0){
+									$cgpa=0;
+									$res=0;
+									$div=0;
+									while($row4=$r4->fetch_assoc()){
+										$s=0;
+										$c=0;
+										$c=$row4['credits'];
+										$s=$row4['result'];
+										$div+=$c;
+										$res+=$s;
+									}
+									$cgpa=($res/$div)*10;
+									$formatted_cgpa = number_format($cgpa, 2);
 									echo $formatted_cgpa;
+									}else{
+										echo $formatted_cgpa;
+									}
+								}else{
+									echo "Not Verified";
 								}
+							}else{
+								echo "0";
+							}
+							
 							echo "</div>";
 						}						
 						?>
@@ -115,13 +128,12 @@ $usertype=$_SESSION['user_type'];
 					</div>
 				</div>
 			</div>
-			
 			<?php
 			$max_query = "SELECT MAX(sem) AS max_value FROM subjects";
 			$result = $conn->query($max_query);
 			$row = $result->fetch_assoc();
 			$max_value = $row['max_value'];
-			
+			echo"<div  id='grades' class='card-03 num-inputs' style='margin: 0 auto; height: 1em'></div>";
 			for($i=1; $i<=$max_value; $i++){
 				echo"<div class='card-03' id='s$i' style='padding: 2em;'>";
 				echo"<h3>SEMESTER 0$i</h3>";
@@ -151,7 +163,7 @@ $usertype=$_SESSION['user_type'];
 						echo "<td style='text-align: left; width: 65%;'>".$row["name"]."</td>";
 						echo "<td style='width: 7.5%;'>".$row["credit"]."</td>";
 						echo "<td style='width: 7.5%;'>";
-						echo "<input type='text' name=$simark class='num-inputs' style='text-align: center; width: 100%; margin: 0;'
+						echo "<input type='number' name=$simark class='num-inputs' style='text-align: center; width: 100%; margin: 0;'
 							value=".$row['imark'].">";
 						echo "</td>";
 						echo "<td style='width: 10%;'>";
@@ -184,7 +196,7 @@ $usertype=$_SESSION['user_type'];
 							echo "<td style='text-align: left; width: 65%;'>".$row["name"]."</td>";
 							echo "<td style='width: 7.5%;'>".$row["credit"]."</td>";
 							echo "<td style='width: 7.5%;'>";
-							echo "<input type='text' name=$simark class='num-inputs' style='text-align: center; width: 100%; margin: 0;'>";
+							echo "<input type='number' name=$simark class='num-inputs' style='text-align: center; width: 100%; margin: 0;'>";
 							echo "</td>";
 							echo "<td style='width: 10%;'>";
 							echo"<select id='$grade' name='$grade' class='dd-inputs' required>
@@ -225,7 +237,7 @@ $usertype=$_SESSION['user_type'];
 								$conn->query($sql23);
 							}
 							else{
-								$sql22="INSERT INTO results (admn, code, grade, imark, sem) VALUES ('$user', '$scode', '$sgrade', '$simark', '$i')";
+								$sql22="INSERT INTO results (admn, code, grade, imark,verified, sem) VALUES ('$user', '$scode', '$sgrade', '$simark', 0, '$i')";
 								$conn->query($sql22);
 							}
 							$y++;
